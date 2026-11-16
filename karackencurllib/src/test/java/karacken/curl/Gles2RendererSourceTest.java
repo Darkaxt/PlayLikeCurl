@@ -64,7 +64,7 @@ public class Gles2RendererSourceTest {
     }
 
     @Test
-    public void translucentSurfaceClearsUncoveredPixelsWithOpaqueDeckMaterial()
+    public void translucentSurfaceClearsUncoveredPixelsWithDeckMaterial()
             throws IOException {
         String renderer = source("PageRenderer.java");
         String surface = source("PageSurfaceView.java");
@@ -78,6 +78,11 @@ public class Gles2RendererSourceTest {
         int clear = drawFrame.indexOf("GLES20.glClear(");
         assertTrue(background >= 0 && background < clear);
         assertFalse(drawFrame.contains("GLES20.glClearColor(0f, 0f, 0f, 0f)"));
+        // Only the material decides transparency: opaque, or exactly 0x00000000.
+        String material = source("PageMaterial.java");
+        assertTrue(material.contains(
+                "requireOpaqueOrClear(uncoveredBackgroundColorArgb, \"Uncovered background\")"));
+        assertTrue(material.contains("if (colorArgb != 0) {"));
     }
 
     @Test

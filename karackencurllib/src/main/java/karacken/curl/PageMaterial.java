@@ -37,7 +37,7 @@ public final class PageMaterial {
         requireOpaque(frontPaperColorArgb, "Front paper");
         requireOpaque(reversePaperColorArgb, "Reverse paper");
         requireOpaque(fixedBorderColorArgb, "Fixed border");
-        requireOpaque(uncoveredBackgroundColorArgb, "Uncovered background");
+        requireOpaqueOrClear(uncoveredBackgroundColorArgb, "Uncovered background");
         if (fixedBorderWidthPx <= 0) {
             throw new IllegalArgumentException("Fixed border width must be positive");
         }
@@ -155,6 +155,16 @@ public final class PageMaterial {
                 clippingRect,
                 fixedBorderRect,
                 fixedBorderWidthPx);
+    }
+
+    /**
+     * The uncovered background may also be fully transparent (0x00000000): the translucent
+     * surface then shows the host's own backdrop beside the pages instead of a flat colour.
+     */
+    private static void requireOpaqueOrClear(int colorArgb, String name) {
+        if (colorArgb != 0) {
+            requireOpaque(colorArgb, name);
+        }
     }
 
     private static void requireOpaque(int colorArgb, String name) {
